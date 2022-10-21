@@ -2,7 +2,7 @@ const { MerkleTree } = require('merkletreejs');
 const keccak256 = require('keccak256');
 
 
-const whitelistAddresses = require("./whitelistTestnet").default;
+const whitelistAddresses = require("./whitelist").default;
 // console.log(whitelistAddresses);
 
 function createMerkleRoot() {
