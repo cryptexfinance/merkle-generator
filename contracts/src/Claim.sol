@@ -19,6 +19,13 @@ contract Claim is Ownable {
     error ClaimPeriodExpired();
     error ClaimPeriodNotExpired();
 
+    modifier onlyExpired() {
+        if (block.timestamp <= claimPeriod) {
+            revert ClaimPeriodNotExpired();
+        }
+        _;
+    }
+
     constructor(
         bytes32 _root,
         address _treasury,
@@ -33,16 +40,12 @@ contract Claim is Ownable {
         claimPeriod = block.timestamp + _timeout;
     }
 
-    function isClaimed(address _account) public view returns (bool) {
-        return claims[currentEpoch][_account];
-    }
-
     function claim(
         bytes32[] memory proof,
         address _account,
         uint256 _amount
-    ) public {
-        if(block.timestamp > claimPeriod){
+    ) external {
+        if (block.timestamp > claimPeriod) {
             revert ClaimPeriodExpired();
         }
         if (isClaimed(_account)) {
@@ -58,19 +61,17 @@ contract Claim is Ownable {
         claims[currentEpoch][_account] = true;
     }
 
-    function newEpoch(bytes32 _root) public onlyOwner {
-        if(block.timestamp <= claimPeriod){
-            revert ClaimPeriodNotExpired();
-        }
+    function newEpoch(bytes32 _root) external onlyOwner onlyExpired {
         root = _root;
         currentEpoch++;
         claimPeriod = block.timestamp + timeout;
     }
 
-        function endAirdrop() public onlyOwner {
-        if(block.timestamp <= claimPeriod){
-            revert ClaimPeriodNotExpired();
-        }
+    function endAirdrop() external onlyOwner onlyExpired {
         rewardToken.transfer(treasury, rewardToken.balanceOf(address(this)));
+    }
+
+    function isClaimed(address _account) public view returns (bool) {
+        return claims[currentEpoch][_account];
     }
 }
