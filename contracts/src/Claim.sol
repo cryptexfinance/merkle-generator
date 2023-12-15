@@ -4,8 +4,9 @@ pragma solidity ^0.8.4;
 import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
-contract Claim is Ownable {
+contract Claim is Ownable, ReentrancyGuard {
     bytes32 public root;
     address public immutable treasury;
     ERC20 public immutable rewardToken;
@@ -44,7 +45,7 @@ contract Claim is Ownable {
         bytes32[] memory proof,
         address _account,
         uint256 _amount
-    ) external {
+    ) external nonReentrant {
         if (block.timestamp > claimPeriod) {
             revert ClaimPeriodExpired();
         }
@@ -57,8 +58,8 @@ contract Claim is Ownable {
         if (!MerkleProof.verify(proof, root, leaf)) {
             revert InvalidProof();
         }
-        rewardToken.transfer(_account, _amount);
         claims[currentEpoch][_account] = true;
+        rewardToken.transfer(_account, _amount);
     }
 
     function newEpoch(bytes32 _root) external onlyOwner onlyExpired {
@@ -67,7 +68,7 @@ contract Claim is Ownable {
         claimPeriod = block.timestamp + timeout;
     }
 
-    function endAirdrop() external onlyOwner onlyExpired {
+    function endAirdrop() external onlyOwner onlyExpired nonReentrant {
         rewardToken.transfer(treasury, rewardToken.balanceOf(address(this)));
     }
 
