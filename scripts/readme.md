@@ -10,3 +10,13 @@ This script generates the merkle root for the distribution of the retroactive CT
 - Airdrop takes into account the CTX delegated for governance including staked on Single Side Staking.
 - Airdrop Multipliers are based in the number of month.
 - Airdrop is has a multiplier calculated based on participation in governance of the delegate onchain.
+
+## How to use
+
+Head to `./scripts/retro_airdrop` and run the following command:
+
+```bash
+node generateTree -f <FILE_OF_ALLOWLIST>
+```
+
+This will print the merkleroot used in the claim contracts. You can edit and use the `obtainProof` script to get a proof for an address which can be used to make a claim.
