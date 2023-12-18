@@ -10,7 +10,7 @@ contract Claim is Ownable, ReentrancyGuard {
     bytes32 public root;
     address public immutable treasury;
     ERC20 public immutable rewardToken;
-    uint256 public timeout;
+    uint256 public epochDuration;
     uint256 public claimPeriod;
     mapping(uint256 => mapping(address => bool)) public claims;
     uint256 public currentEpoch;
@@ -31,14 +31,14 @@ contract Claim is Ownable, ReentrancyGuard {
         bytes32 _root,
         address _treasury,
         ERC20 _rewardToken,
-        uint256 _timeout
+        uint256 _epochDuration
     ) Ownable(msg.sender) {
         root = _root;
         treasury = _treasury;
         rewardToken = _rewardToken;
-        timeout = _timeout;
+        epochDuration = _epochDuration;
         /// @notice We assume deploy starts the first reward epoch
-        claimPeriod = block.timestamp + _timeout;
+        claimPeriod = block.timestamp + _epochDuration;
     }
 
     function claim(
@@ -65,7 +65,7 @@ contract Claim is Ownable, ReentrancyGuard {
     function newEpoch(bytes32 _root) external onlyOwner onlyExpired {
         root = _root;
         currentEpoch++;
-        claimPeriod = block.timestamp + timeout;
+        claimPeriod = block.timestamp + epochDuration;
     }
 
     function endAirdrop() external onlyOwner onlyExpired nonReentrant {

@@ -18,7 +18,7 @@ contract ClaimTest is Test {
     bytes32 merkleRoot =
         0xec14f6f339cb57f9487917cbc578a8f05ec78d0b2c54b94ecc0e600b7b540042;
     address account1 = 0x097A3a6cE1D77a11Bda1AC40C08fDF9F6202103F;
-    uint256 timeout = 4 weeks;
+    uint256 epochDuration = 4 weeks;
     bytes32[] merkleProof1 = [
         bytes32(
             0x581a2e80c5c62766708abb9f162e2a52b55dd4ba0bafe917881389da1d6a76d6
@@ -39,7 +39,7 @@ contract ClaimTest is Test {
     function setUp() public {
         //set fork
         mainnetFork = vm.createSelectFork(vm.rpcUrl("mainnet"), blockNumber);
-        claim = new Claim(merkleRoot, treasury, ctx, timeout);
+        claim = new Claim(merkleRoot, treasury, ctx, epochDuration);
         vm.prank(treasury);
         ctx.transfer(address(claim), 50_000 ether);
     }
@@ -47,11 +47,11 @@ contract ClaimTest is Test {
     function test_SetUpState() public view {
         assert(claim.root() == merkleRoot);
         assert(address(claim.rewardToken()) == address(ctx));
-        assert(claim.timeout() == 4 weeks);
+        assert(claim.epochDuration() == 4 weeks);
         assert(ctx.balanceOf(address(claim)) == 50_000 ether);
         assert(claim.treasury() == treasury);
         assert(claim.owner() == address(this));
-        assert(claim.claimPeriod() == block.timestamp + timeout);
+        assert(claim.claimPeriod() == block.timestamp + epochDuration);
     }
 
     function test_claim_Revert_WhenInvalidProof() public {
@@ -172,7 +172,7 @@ contract ClaimTest is Test {
         vm.warp(oldPeriod);
         claim.newEpoch(merkleRoot2);
         assertEq(claim.currentEpoch(), oldEpoch + 1, "Epoch didn't increase");
-        assertEq(claim.claimPeriod(), oldPeriod + timeout);
+        assertEq(claim.claimPeriod(), oldPeriod + epochDuration);
         assertEq(claim.root(), merkleRoot2, "Merkle didn't change");
         // test claims after
         assertEq(claim.isClaimed(account1), false, "already claimed");
