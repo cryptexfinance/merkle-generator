@@ -7,7 +7,6 @@ program.option('-f, --file <path>', "route to the file with the allowlist addres
 program.parse();
 
 const options = program.opts();
-const limit = options.file;
 const allowlistAddresses = require(options.file).default;
 // console.log(allowlistAddresses);
 
