@@ -1,18 +1,19 @@
+//TODO: Change js files for json in read
 const { program } = require('commander');
 const { StandardMerkleTree } = require('@openzeppelin/merkle-tree');
 const keccak256 = require('keccak256');
 const fs = require("fs");
 
-program.option('-f, --file <path>', "route to the file with the allowlist addresses","./example")
+program.option('-f, --file <path>', "route to the file with the allowlist addresses","./distribution.json")
 program.parse();
 
 const options = program.opts();
-const allowlistAddresses = require(options.file).default;
-// console.log(allowlistAddresses);
+const allowlistAddresses = require(options.file);
+
+console.log(allowlistAddresses);
 
 function createMerkleRoot() {
     const tree = StandardMerkleTree.of(allowlistAddresses, ["address", "uint256"]);
-    console.log(tree.root);
     fs.writeFileSync("tree.json", JSON.stringify(tree.dump()));
     // const leafNodes = allowlistAddresses.map(row => (keccak256(["address", "uint256"], row.address, row.earnings)));
     // const merkleTree = new MerkleTree(leafNodes, keccak256, { sortPairs: true });

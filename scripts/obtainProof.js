@@ -1,3 +1,4 @@
+// Example of how to get a proof
 const { StandardMerkleTree } = require('@openzeppelin/merkle-tree');
 const keccak256 = require('keccak256');
 const fs = require("fs");

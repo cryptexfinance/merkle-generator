@@ -13,10 +13,26 @@ This script generates the merkle root for the distribution of the retroactive CT
 
 ## How to use
 
-Head to `./scripts/retro_airdrop` and run the following command:
+#### calculateDistribution
+
+This scripts takes a json file with the data of delegation to calculate how much each address should get.
+
+```bash
+node calculateDistribution -f <FILE_OF_ALLOWLIST>
+```
+
+#### generateTree
+
+This will print the merkleroot used in the claim contracts.
 
 ```bash
 node generateTree -f <FILE_OF_ALLOWLIST>
 ```
 
-This will print the merkleroot used in the claim contracts. You can edit and use the `obtainProof` script to get a proof for an address which can be used to make a claim.
+#### obtainProof
+
+You can edit and use the `obtainProof` script to get a proof for an address which can be used to make a claim.
+
+```bash
+node obtainProof
+```
