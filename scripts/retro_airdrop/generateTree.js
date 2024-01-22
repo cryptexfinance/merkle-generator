@@ -9,7 +9,6 @@ program.parse();
 const options = program.opts();
 const limit = options.file;
 const allowlistAddresses = require(options.file).default;
-// console.log(allowlistAddresses);
 
 function createMerkleRoot() {
     const tree = StandardMerkleTree.of(allowlistAddresses, ["address", "uint256"]);
